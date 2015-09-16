@@ -1,10 +1,17 @@
 var accessStats = require("./lib/objectAccess.js");
+var validate = require('jsonschema').validate;
 
 /**
  * @description Method to dynamically change the time window
  */
 exports.changeTimeWindow = function(interval, cb) {
-	if (typeof interval !== 'undefined') {
+	var dataCheck = validate(interval, {"type":"number"});
+
+	if (typeof interval === 'undefined') {
+		return cb('Error: interval undefined, please provide.');
+	}
+
+	if (dataCheck['errors'].length == 0) {
 		accessStats.changeWindow(interval, function(err) {
 			if (err) {
 				console.log('Change Window Error: ' + err);
@@ -12,8 +19,8 @@ exports.changeTimeWindow = function(interval, cb) {
 				return cb(null, 'ok');
 			}
 		});
-	} else {
-		return cb('Please provide integer interval.', null);
+	}else{
+		return cb('Error: ' + interval + ' ' + dataCheck['errors'][0]['message']);
 	}
 }
 
@@ -21,14 +28,20 @@ exports.changeTimeWindow = function(interval, cb) {
  * @description Process to increment access.
  */
 exports.incAccess = function(entityName, cb) {
-	if (typeof entityName !== 'undefined') {
+	var dataCheck = validate(entityName, {"type":"string"});
+	
+	if (typeof entityName === 'undefined') {
+		return cb('Error: incAccess[entityName] undefined, please provide.');
+	}
+
+	if (dataCheck['errors'].length == 0) {
 		accessStats.inc(entityName, function(err) {
 			if (err) {
 				console.log('Inc Error: ' + err);
 			}
 		});
 	} else {
-		return cb('Please provide entity name to increment.', null);
+		return cb('Error: incAccess[entityName] ' + entityName + ' ' + dataCheck['errors'][0]['message']);
 	}
 }
 
@@ -36,13 +49,19 @@ exports.incAccess = function(entityName, cb) {
  * @description Process to decrememnt access.
  */
 exports.decAccess = function(entityName, cb) {
-	if (typeof entityName !== 'undefined') {
-		accessStats.dec(entityName, function(err) {
+	var dataCheck = validate(entityName, {"type":"string"});
+	
+	if (typeof entityName === 'undefined') {
+		return cb('Error: decAccess[entityName] undefined, please provide.');
+	}
+
+	if (dataCheck['errors'].length == 0) {
+		accessStats.inc(entityName, function(err) {
 			if (err) {
-				console.log('Dec Error: ' + err);
+				console.log('Inc Error: ' + err);
 			}
 		});
-	} else {
-		return cb('Please provide entity name to decrement.', null);
+	}else{
+		return cb('Error: decAccess[entityName] ' + entityName + ' ' + dataCheck['errors'][0]['message']);
 	}
 }
