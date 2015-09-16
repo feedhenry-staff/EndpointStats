@@ -1,11 +1,14 @@
-// var env = require("./env");
 var accessStats = require("./lib/objectAccess.js");
 
 /**
 * @description Method to dynamically change the time window
 */
 exports.changeTimeWindow = function(params, cb){
-
+	accessStats.changeWindow(params, function(err){
+		if (err) {
+			console.log('Change Window Error: ' + err);
+		}
+	});
 }
 
 /**
